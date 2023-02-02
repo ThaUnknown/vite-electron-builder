@@ -7,7 +7,7 @@ import { join } from 'node:path'
 import { injectAppVersion } from '../../version/inject-app-version-plugin.mjs'
 
 const PACKAGE_ROOT = __dirname
-const PROJECT_ROOT = join(PACKAGE_ROOT, '../..')
+const PROJECT_ROOT = join(PACKAGE_ROOT, '../../..')
 
 /**
  * @type {import('vite').UserConfig}
@@ -19,7 +19,7 @@ const config = {
   envDir: PROJECT_ROOT,
   resolve: {
     alias: {
-      '/@/': join(PACKAGE_ROOT, 'src') + '/'
+      '/@/': join(PACKAGE_ROOT, 'renderer', 'src') + '/'
     }
   },
   base: '',
@@ -28,13 +28,17 @@ const config = {
       strict: true
     }
   },
+  optimizeDeps: {
+    exclude: ['webtorrent'],
+    include: ['webtorrent > junk', 'webtorrent > once']
+  },
   build: {
     sourcemap: true,
     target: `chrome${chrome}`,
     outDir: 'dist',
     assetsDir: '.',
     rollupOptions: {
-      input: join(PACKAGE_ROOT, 'index.html')
+      input: join(PACKAGE_ROOT, '/renderer/index.html')
     },
     emptyOutDir: true,
     reportCompressedSize: false
@@ -45,7 +49,7 @@ const config = {
   plugins: [
     vue(),
     renderer.vite({
-      preloadEntry: join(PACKAGE_ROOT, '../preload/src/index.js')
+      preloadEntry: join(PACKAGE_ROOT, './preload/src/index.js')
     }),
     injectAppVersion()
   ]

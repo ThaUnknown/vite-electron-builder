@@ -18,6 +18,7 @@ const logLevel = 'warn'
  */
 function setupMainPackageWatcher (renderer, backend) {
   process.env.VITE_DEV_SERVER_URL = renderer.resolvedUrls.local[0]
+  process.env.VITE_DEV_SERVER_URL_BACKEND = backend.resolvedUrls.local[0]
 
   /** @type {ChildProcess | null} */
   let electronApp = null
@@ -124,7 +125,12 @@ const rendererWatchServer = await createServer({
   logLevel,
   configFile: 'packages/renderer/vite.config.js'
 }).then(s => s.listen())
+const backendWatchServer = await createServer({
+  mode,
+  logLevel,
+  configFile: 'packages/backend/vite.config.js'
+}).then(s => s.listen())
 
-await setupBackendPackageWatcher(rendererWatchServer)
-await setupPreloadPackageWatcher(rendererWatchServer)
-await setupMainPackageWatcher(rendererWatchServer)
+// await setupBackendPackageWatcher(rendererWatchServer)
+await setupPreloadPackageWatcher(rendererWatchServer, backendWatchServer)
+await setupMainPackageWatcher(rendererWatchServer, backendWatchServer)
